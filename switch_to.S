@@ -1,4 +1,9 @@
 .text
+.globl popFromStack
+popFromStack:
+	popq %rsi
+	popq %rdi
+	
 .globl switchTo
 switchTo:
 
@@ -28,3 +33,4 @@ switchTo:
 	pushq 56(%rax)					# push the next coroutine's eip, and when `ret` executes, then boom!
 
 	ret
+	

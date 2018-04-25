@@ -18,33 +18,33 @@ int main(int argc, char *argv[])
 {
 	// first test
 	
-//	first = new Coro([](){
-//		cout << "haha" << endl;
-//		first->resume(second);
-//		first->yield();
-//		cout << "hehe" << endl;
-//	});
-//	second = new Coro([](){
-//		cout << "hoho" << endl;
-//		second->yield();
-//		cout << "heihei" << endl;
-//		second->yield();
-//	});
-//	
-//	main_coro.resume(first);
-//	
-//	cout << "------------------" << endl;
-//	
-//	
-//	// another test
-//	
-//	third = new Coro([](){
-//		cout << "haha" << endl;
-//	});
-//	
-//	main_coro.resume(third);
-//	
-//	cout << "------------------" << endl;
+	first = new Coro([](){
+		cout << "haha" << endl;
+		first->resume(second);
+		first->yield();
+		cout << "hehe" << endl;
+	});
+	second = new Coro([](){
+		cout << "hoho" << endl;
+		second->yield();
+		cout << "heihei" << endl;
+		second->yield();
+	});
+	
+	main_coro.resume(first);
+	
+	cout << "------------------" << endl;
+	
+	
+	// another test
+	
+	third = new Coro([](){
+		cout << "haha" << endl;
+	});
+	
+	main_coro.resume(third);
+	
+	cout << "------------------" << endl;
 	
 	
 	// another another test
@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 		fourth->resume(sixth);
 		cout << "4" << endl;
 		fourth->resume(fifth);
+		cout << "6" << endl;
 	});
 	fifth = new Coro([](){
 		fifth->yield();

@@ -23,6 +23,7 @@ struct Context {				// callee save registers
 	u64 rip = 0;
 };
 
+extern "C" void popFromStack();
 extern "C" void switchTo(Context *, Context *);
 
 typedef void (*fp)();
@@ -36,7 +37,7 @@ private:
 public:
 	Coro(fp closure = nullptr) : from(nullptr), closure(closure) {		// [[noreturn]]
 //		if (closure == nullptr) return;
-		cxt.rsp = (u64)(stack + STACK_SIZE - FRAME_SIZE);
+		cxt.rsp = (u64)(stack + STACK_SIZE - FRAME_SIZE * 3);
 		cxt.rip = (u64)closure;
 	}
 private:
@@ -50,13 +51,12 @@ public:
 
 void Coro::resume(Coro *other)	      
 { 
-	// update the exit every time. because the caller updates.	
-	if (other->cxt.rbp == 0)
-		asm volatile ("movq 8(%%rbp), %1;"			// get the `rip` of the outer function frame's next address
-									"movq (%%rbp), %0"				// get the `rbp` of the outer function frame
-																	:
-									"=r"(other->cxt.rbp), 		// put in to the exit of `other` coro.
-									"=r"(*(u64*)&other->stack[STACK_SIZE - FRAME_SIZE]));		// set the `rip` address as the `other` coro's exit.
+	if (other->cxt.rbp == 0) {		// set the origin callee's stack exit entry
+		other->cxt.rbp = other->cxt.rsp;		// not to matter the value
+		*(u64*)&other->stack[STACK_SIZE - FRAME_SIZE] = (u64)&this->cxt;
+		*(u64*)&other->stack[STACK_SIZE - FRAME_SIZE * 2] = (u64)&other->cxt;
+		*(u64*)&other->stack[STACK_SIZE - FRAME_SIZE * 3] = (u64)popFromStack;		// cpu (rip)			// Then, stack are on `other` coro, but rip is on `popFromStack`. 
+	}
 	
 	other->from = &this->cxt; 		// set the callee
 	switch_to(&other->cxt); 
