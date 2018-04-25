@@ -2,11 +2,11 @@
 .globl switchTo
 switchTo:
 
-	movq %rsi, %rax		# rax is caller saved register.
+	movq %rsi, %rax				# rax is caller saved register.
 
-	popq 56(%rax)				# the trick of the `next rip` which is pushed by cpu.
+	popq 56(%rax)					# the trick of the `next rip` which is pushed by cpu.
 
-	movq %rbp, (%rax)
+	movq %rbp, (%rax)			# because this is assembly code, so no `push %rbp; movq %rsp, %rbp` here! And no `pop %rbp; ret` at last!
 	movq %rbx, 8(%rax)
 	movq %r12, 16(%rax)
 	movq %r13, 24(%rax)
@@ -25,6 +25,6 @@ switchTo:
 	movq 40(%rax), %r15
 	movq 48(%rax), %rsp
 
-	pushq 56(%rax)				# push the next coroutine's eip, and when `ret` executes, then boom!
+	pushq 56(%rax)					# push the next coroutine's eip, and when `ret` executes, then boom!
 
 	ret

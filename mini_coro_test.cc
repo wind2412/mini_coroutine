@@ -10,6 +10,10 @@ Coro *second;
 
 Coro *third;
 
+Coro *fourth;
+Coro *fifth;
+Coro *sixth;
+
 int main(int argc, char *argv[]) 
 {
 	// first test
@@ -24,22 +28,46 @@ int main(int argc, char *argv[])
 		cout << "hoho" << endl;
 		second->yield();
 		cout << "heihei" << endl;
+		second->yield();
 	});
 	
 	main_coro.resume(first);
 	
-	cout << "over." << endl;
+	cout << "------------------" << endl;
 	
 	
 	// another test
 	
-	
 	third = new Coro([](){
 		cout << "haha" << endl;
-		third->yield();
 	});
 	
 	main_coro.resume(third);
 	
-	cout << "over." << endl;
+	cout << "------------------" << endl;
+	
+	
+	// another another test
+	
+	fourth = new Coro([](){
+		cout << "1" << endl;
+		fourth->resume(fifth);
+		cout << "2" << endl;
+		fourth->resume(sixth);
+		cout << "4" << endl;
+		fourth->resume(fifth);
+	});
+	fifth = new Coro([](){
+		fifth->yield();
+		cout << "5" << endl;
+		fifth->yield();
+	});
+	sixth = new Coro([](){
+		cout << "3" << endl;
+		sixth->resume(fourth);
+	});
+	
+	main_coro.resume(fourth);
+	
+	
 }
