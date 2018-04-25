@@ -43,32 +43,9 @@ private:
 public:
 	void yield() 				  { switch_to(this->from); }								// go back to the caller
 	void resume(Coro *other)	  { other->from = &this->cxt; switch_to(&other->cxt); }		// go to one `coroutine` except `the main thread`
+	~Coro() { if (closure) this->yield(); }		// my trick for the tricky coro stack's top boundary. By using a yield can fix this.
 };
 
 /*===-------------- implementations -----------------====*/
 
 Coro main_coro;			// the main thread's context. It is very important.
-
-/*===---------------- test ---------------------===*/
-
-Coro *first;
-Coro *second;
-
-int main(int argc, char *argv[]) 
-{
-	first = new Coro([](){
-		cout << "haha" << endl;
-		first->resume(second);
-		first->yield();
-		cout << "hehe" << endl;
-	});
-	second = new Coro([](){
-		cout << "hoho" << endl;
-		second->yield();
-		cout << "heihei" << endl;
-	});
-	
-	main_coro.resume(first);
-	
-	cout << "over." << endl;
-}

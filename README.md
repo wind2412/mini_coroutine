@@ -5,6 +5,6 @@ Only a toy to present the principle of coroutine. It's flavor is some what like 
 # Play:
 Maybe on linux only (mac cannot link. windows I dont know).
 ```
-g++ -std=c++11 -g switch_to.S simple_coro.cc -o simple_coro
-./simple_coro
+g++ -std=c++11 -g switch_to.S mini_coro_test.cc -o mini_coro_test
+./mini_coro_test
 ```
