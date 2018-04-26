@@ -22,6 +22,8 @@ struct Context {	// callee save registers
 	u64 rip = 0;
 };
 
+extern "C" void switchTo(Context *, Context *);
+
 typedef void (*fp)();
 
 class Coro {
@@ -42,8 +44,6 @@ public:
 	void yield() 				  { switch_to(this->from); }								// go back to the caller
 	void resume(Coro *other)	  { other->from = &this->cxt; switch_to(&other->cxt); }		// go to one `coroutine` except `the main thread`
 };
-
-extern "C" void switchTo(Context *, Context *);
 
 /*===-------------- implementations -----------------====*/
 
