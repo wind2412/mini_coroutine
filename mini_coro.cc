@@ -51,11 +51,12 @@ public:
 void Coro::resume(Coro *other)	      
 { 
 	// update the exit every time. because the caller updates.	
-	asm volatile ("movq 8(%%rbp), %1;"			// get the `rip` of the outer function frame's next address
-								"movq (%%rbp), %0"				// get the `rbp` of the outer function frame
-																:
-								"=r"(other->cxt.rbp), 		// put in to the exit of `other` coro.
-								"=r"(*(u64*)&other->stack[STACK_SIZE - FRAME_SIZE]));		// set the `rip` address as the `other` coro's exit.
+	if (other->cxt.rbp == 0)
+		asm volatile ("movq 8(%%rbp), %1;"			// get the `rip` of the outer function frame's next address
+									"movq (%%rbp), %0"				// get the `rbp` of the outer function frame
+																	:
+									"=r"(other->cxt.rbp), 		// put in to the exit of `other` coro.
+									"=r"(*(u64*)&other->stack[STACK_SIZE - FRAME_SIZE]));		// set the `rip` address as the `other` coro's exit.
 	
 	other->from = &this->cxt; 		// set the callee
 	switch_to(&other->cxt); 
