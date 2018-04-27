@@ -36,7 +36,6 @@ private:
 	fp closure;						// the task. no arguments now.
 public:
 	Coro(fp closure = nullptr) : from(nullptr), closure(closure) {		// [[noreturn]]
-//		if (closure == nullptr) return;
 		cxt.rsp = (u64)(stack + STACK_SIZE - FRAME_SIZE * 3);
 		cxt.rip = (u64)closure;
 	}
@@ -51,6 +50,7 @@ public:
 
 void Coro::resume(Coro *other)	      
 { 
+	// use a tricky to handle this, I spend lots of time to consider these code... use switchTo to get back to origin to make a hack:-)
 	if (other->cxt.rbp == 0) {		// set the origin callee's stack exit entry
 		other->cxt.rbp = other->cxt.rsp;		// not to matter the value
 		*(u64*)&other->stack[STACK_SIZE - FRAME_SIZE] = (u64)&this->cxt;

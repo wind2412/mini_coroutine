@@ -14,6 +14,11 @@ Coro *fourth;
 Coro *fifth;
 Coro *sixth;
 
+Coro *seventh;
+Coro *eighth;
+Coro *nineth;
+Coro *tenth;
+
 int main(int argc, char *argv[]) 
 {
 	// first test
@@ -71,5 +76,34 @@ int main(int argc, char *argv[])
 	
 	main_coro.resume(fourth);
 	
+	cout << "------------------" << endl;
 	
+	// another another another test
+	
+	seventh = new Coro([](){
+		cout << "1" << endl;
+		seventh->resume(eighth);
+		cout << "3" << endl;
+		seventh->resume(nineth);
+	});
+	eighth = new Coro([](){
+		cout << "2" << endl;
+		eighth->yield();
+		cout << "6" << endl;
+		eighth->yield();		
+	});
+	nineth = new Coro([](){
+		cout << "4" << endl;
+		nineth->resume(tenth);
+	});
+	tenth = new Coro([](){
+		cout << "5" << endl;
+		tenth->resume(eighth);
+		cout << "7" << endl;
+		tenth->yield();
+	});
+	
+	main_coro.resume(seventh);
+	
+	cout << "test over." << endl;
 }
